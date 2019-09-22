@@ -2,7 +2,7 @@ defmodule Proj2.Client do
     use GenServer
     
     def start_link(x) do
-        GenServer.start_link(Proj2.Sever, x)
+        GenServer.start_link(Proj2.Server, x)
     end
 
     def send_gossip_message(server) do
@@ -39,4 +39,9 @@ defmodule Proj2.Client do
     def get_diff(server) do
         GenServer.call(server, {:get_diff})
     end
+
+    def init(init_arg) do
+        {:ok, init_arg}
+      end
+  
 end

@@ -1,7 +1,7 @@
-defmodule Proj2.Sever do
+defmodule Proj2.Server do
     use GenServer
     
     def init(x) do
-      
+      {:ok, x}
     end
 end

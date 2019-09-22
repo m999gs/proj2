@@ -11,9 +11,8 @@ defmodule Proj2.Application do
       # {Proj2.Worker, arg}
     ]
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Proj2.Supervisor]
     Supervisor.start_link(children, opts)
+    # Proj2.Supervisor.start_link(self())   #calls the supervisor with its pid, not working currently
   end
 end
