@@ -6,13 +6,15 @@ defmodule Proj2.Application do
   use Application
 
   def start(_type, _args) do
-    children = [
-      # Starts a worker by calling: Proj2.Worker.start_link(arg)
-      # {Proj2.Worker, arg}
-    ]
+    #This thing won't run anymore, no need to worry about code here
 
-    opts = [strategy: :one_for_one, name: Proj2.Supervisor]
-    Supervisor.start_link(children, opts)
-    # Proj2.Supervisor.start_link(self())   #calls the supervisor with its pid, not working currently
+    # children = [
+    #   # Starts a worker by calling: Proj2.Worker.start_link(arg)
+    #   # {Proj2.Worker, arg}
+    # ]
+
+    # opts = [strategy: :one_for_one, name: Proj2.Supervisor]
+    # Supervisor.start_link(children, opts)
+    Proj2.Supervisor.start_link(self())
   end
 end
