@@ -14,18 +14,18 @@ defmodule Proj2.Supervisor do
                     IO.puts("Initializing gossip algorithm")
 
                     case topology do
-                        "full-network" ->
+                        "full" ->
                             IO.puts("Implementing full network topology")
                             #initialization of the network happens here, its child nodes are decided, and a message is sent across neighbors
                         "line" -> 
                             IO.puts("Implementing line topology")
-                        "random-2d-grid" ->
+                        "rand2D" ->
                             IO.puts("Implementing random 2D grid topology")
-                        "3d-torus-grid" ->
+                        "3Dtorus" ->
                             IO.puts("Implementing 3D torus grid topology")
                         "honeycomb" ->
                             IO.puts("Implementing honeycomb topology")
-                        "honeycomb-random" ->
+                        "randhoneycomb" ->
                             IO.puts("Implementing honeycomb topology with random neighbors")
 
                         _ ->
@@ -35,17 +35,17 @@ defmodule Proj2.Supervisor do
                     IO.puts("Initializing push sum algorithm")
 
                     case topology do
-                        "full-network" ->
+                        "full" ->
                             IO.puts("Implementing full network topology")
                         "line" -> 
                             IO.puts("Implementing line topology")
-                        "random-2d-grid" ->
+                        "rand2D" ->
                             IO.puts("Implementing random 2D grid topology")
-                        "3d-torus-grid" ->
+                        "3Dtorus" ->
                             IO.puts("Implementing 3D torus grid topology")
                         "honeycomb" ->
                             IO.puts("Implementing honeycomb topology")
-                        "honeycomb-random" ->
+                        "randhoneycomb" ->
                             IO.puts("Implementing honeycomb topology with random neighbors")
 
                         _ ->
