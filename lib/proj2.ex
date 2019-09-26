@@ -13,17 +13,21 @@ defmodule Proj2 do
       :world
 
   """
-  def startproject() do
-    if Enum.at(System.argv(),0) != nil and Enum.at(System.argv(),1) !=nil and Enum.at(System.argv(),2) != nil do
-        [numNodes, topology, algorithm] = System.argv()
-        {:ok, _pid} = Proj2.Supervisor.start_link({self(), numNodes, topology, algorithm})
-
+  def main(args \\ []) do
+    startproject(args)
+  end
+  
+  def startproject(args) do
+    if length(args) >= 3 do
+      [numNodes, topology, algorithm] = args
+      numNodes = String.to_integer(numNodes)
+      {:ok, _pid} = Proj2.Supervisor.start_link({self(), numNodes, topology, algorithm})
     else
-        IO.puts("------You have entered an invalid argument------")
-        IO.puts("------please use only ($ mix run go.exs numNodes topology algorithm) format------")
+        IO.puts("------You have invalid/missing argument(s)------")
         IO.puts("------numNodes : enter a number like 1000------")
         IO.puts("------topology : enter the topology  (full, line, rand2D, 3Dtorus, honeycomb, randhoneycomb)------")
         IO.puts("------algorithm : enter the algorithm (gossip or push-sum)------")
+        System.halt(0)
     end
   end
 
