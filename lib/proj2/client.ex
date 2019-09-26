@@ -6,11 +6,11 @@ defmodule Proj2.Client do
     end
 
     def send_gossip_message(server) do
-        GenServer.cast(server, {:send_message})
+        GenServer.cast(server, {:gossip_message})
     end
 
     def send_pushsum_message(server) do
-        GenServer.cast(server, {:send_message_push_sum})
+        GenServer.cast(server, {:push_sum_message})
     end
 
     def set_neighbors(server, neighbors) do

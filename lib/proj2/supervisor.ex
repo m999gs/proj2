@@ -12,49 +12,17 @@ defmodule Proj2.Supervisor do
             case algorithm do
                 "gossip" ->
                     IO.puts("Initializing gossip algorithm")
+                    actor=create_actors(numNodes;
 
-                    case topology do
-                        "full" ->
-                            IO.puts("Implementing full network topology")
-                            #initialization of the network happens here, its child nodes are decided, and a message is sent across neighbors
-                        "line" -> 
-                            IO.puts("Implementing line topology")
-                        "rand2D" ->
-                            IO.puts("Implementing random 2D grid topology")
-                        "3Dtorus" ->
-                            IO.puts("Implementing 3D torus grid topology")
-                        "honeycomb" ->
-                            IO.puts("Implementing honeycomb topology")
-                        "randhoneycomb" ->
-                            IO.puts("Implementing honeycomb topology with random neighbors")
-
-                        _ ->
-                            IO.puts("Please enter a valid topology, e.g. line or honeycomb")
-                    end
                 "push-sum" ->
                     IO.puts("Initializing push sum algorithm")
-
-                    case topology do
-                        "full" ->
-                            IO.puts("Implementing full network topology")
-                        "line" -> 
-                            IO.puts("Implementing line topology")
-                        "rand2D" ->
-                            IO.puts("Implementing random 2D grid topology")
-                        "3Dtorus" ->
-                            IO.puts("Implementing 3D torus grid topology")
-                        "honeycomb" ->
-                            IO.puts("Implementing honeycomb topology")
-                        "randhoneycomb" ->
-                            IO.puts("Implementing honeycomb topology with random neighbors")
-
-                        _ ->
-                            IO.puts("Please enter a valid topology, e.g. line or honeycomb")
-                    end
+                    actor=create_actors(numNodes);
+                    
                 _ ->
                     IO.puts "you have entered the wrong algorithm name"
                     IO.puts "please use gossip or push-sum as an algorithm name in 3rd argument"
             end
+
         end
     # {:ok, init_arg}   #Bad value 
     children = [
@@ -66,4 +34,48 @@ defmodule Proj2.Supervisor do
     # Supervisor.start_link(children, opts)
     Supervisor.init(children, strategy: :one_for_one)
     end
+
+    def initializing_algorithm(numNodes, topology, algorithm, actors) do
+        :ets.new(:count, [:set, :public, :named_table])
+        :ets.insert(:count, {"spread", 0})
+    
+        # Determine Neighbor nodes as per requested topology
+        neighbors =
+        case topology do
+            "full" ->
+                _neighbors = determine_nodes_full(actors)
+                IO.puts("Implementing full network topology")
+            "line" -> 
+                _neighbors = determine_nodes_full(actors)
+                IO.puts("Implementing line topology")
+            "rand2D" ->
+                _neighbors = determine_nodes_full(actors)
+                IO.puts("Implementing random 2D grid topology")
+            "3Dtorus" ->
+                _neighbors = determine_nodes_full(actors)
+                IO.puts("Implementing 3D torus grid topology")
+            "honeycomb" ->
+                _neighbors = determine_nodes_full(actors)
+                IO.puts("Implementing honeycomb topology")
+            "randhoneycomb" ->
+                _neighbors = determine_nodes_full(actors)
+                IO.puts("Implementing honeycomb topology with random neighbors")
+            _ ->
+                IO.puts("Please enter a valid topology, e.g. line or honeycomb")
+        end
+        set_neighbors(neighbors)
+        prev = System.monotonic_time(:millisecond)
+    
+        if (algorithm == "gossip") do
+          # call gossip algorithm
+          gossip(actors, neighbors, totalNodes)
+        else
+          # call push-sum algorithm
+          push_sum(actors, neighbors, totalNodes)
+        end
+        IO.puts "Time to Converge: " <> to_string(System.monotonic_time(:millisecond) - prev) <> " ms"
+        System.halt(0)
+
+    end
+
 end
