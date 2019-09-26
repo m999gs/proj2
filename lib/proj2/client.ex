@@ -1,22 +1,22 @@
 defmodule Proj2.Client do
     use GenServer
-    
+
     def start_link(x) do
         GenServer.start_link(Proj2.Server, x)
     end
 
-    def send_gossip_message(server) do
-        GenServer.cast(server, {:gossip_message})
+    def send_message(server) do
+        GenServer.cast(server, {:send_message})
     end
 
-    def send_pushsum_message(server) do
-        GenServer.cast(server, {:push_sum_message})
+    def send_message_push_sum(server) do
+        GenServer.cast(server, {:send_message_push_sum})
     end
 
     def set_neighbors(server, neighbors) do
         GenServer.cast(server, {:set_neighbors, neighbors})
     end
-    
+
     def get_count(server) do
         {:ok, count} = GenServer.call(server, {:get_count, "count"})
         count
@@ -40,8 +40,4 @@ defmodule Proj2.Client do
         GenServer.call(server, {:get_diff})
     end
 
-    def init(init_arg) do
-        {:ok, init_arg}
-      end
-  
 end
