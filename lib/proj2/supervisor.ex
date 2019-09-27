@@ -74,26 +74,27 @@ defmodule Proj2.Supervisor do
         neighbors =
         case topology do
             "full" ->
-                _neighbors = determine_nodes_full(actors)
-                IO.puts("Implementing full network topology")
-            "line" -> 
-                _neighbors = determine_nodes_line(actors, topology)
-                IO.puts("Implementing line topology")
+                  IO.puts "Implementing full topology"
+                  _neighbors = determine_nodes_full(actors)
+            "line" ->
+                  IO.puts "Implementing line topology"
+                  _neighbors = determine_nodes_line(actors)
             "rand2D" ->
-                _neighbors = determine_nodes_2D(actors, topology)
-                IO.puts("Implementing random 2D grid topology")
+                  IO.puts "Implementing random 2D topology"
+                  _neighbors = determine_nodes_rand2D(actors)
             "3Dtorus" ->
-                _neighbors = determine_nodes_full(actors)
-                IO.puts("Implementing 3D torus grid topology")
-            "honeycomb" ->
-                _neighbors = determine_nodes_full(actors)
-                IO.puts("Implementing honeycomb topology")
-            "randhoneycomb" ->
-                _neighbors = determine_nodes_full(actors)
-                IO.puts("Implementing honeycomb topology with random neighbors")
-            _ ->
-                IO.puts("Please enter a valid topology, e.g. line or honeycomb")
-        end
+                  IO.puts("Implementing 3D torus grid topology")
+                  _neighbors = determine_nodes_3D(actors)
+            # "honeycomb" ->
+            #       IO.puts("Implementing honeycomb topology")
+            #       _neighbors = determine_nodes_honeycomb(actors)
+            # "randhoneycomb" ->
+            #       IO.puts("Implementing honeycomb topology with random neighbors")
+            #       _neighbors = determine_nodes_full(actors)
+             _ ->
+                  IO.puts "Please use one of full/3D/rand2D/torus/line/impLine as topology"
+                  System.halt(0)
+          end
             
         set_neighbors(neighbors)
         start_time = System.monotonic_time(:millisecond)
@@ -161,35 +162,69 @@ defmodule Proj2.Supervisor do
         Enum.reduce(actors, %{}, fn (x, acc) ->  Map.put(acc, x, Enum.filter(actors, fn y -> y != x end)) end)
     end
     
-    #  ---------------------   Determine neighbor nodes for line topology  ---------------------
-    def determine_nodes_line(actors, topology) do
-        indexed_actors = Stream.with_index(actors, 0) |> Enum.reduce(%{}, fn({y,number}, acc) -> Map.put(acc, number, y) end)
-        n = length(actors)
-        Enum.reduce(0..n-1, %{}, fn (x, acc) ->
-            neighbors =
-            cond do
-                x == 0 -> [1]
-                x == n-1 -> [n - 2]
-                true -> [(x - 1), (x + 1)]
-            end
-            neighbors =
-                case topology do
-                    "impLine" ->
-                    neighbors ++ get_random_node(neighbors, x, n-1) 
-                    _ -> neighbors
-                end
+  #  ---------------------   Determine neighbor nodes for line topology  ---------------------
+  def determine_nodes_line(actors) do
+    indexed_actors = Stream.with_index(actors, 0) |> Enum.reduce(%{}, fn({y,number}, acc) -> Map.put(acc, number, y) end)
+    n = length(actors)
+    Enum.reduce(0..n-1, %{}, fn (x, acc) ->
+        neighbors =
+          cond do
+            x == 0 -> [1]
+            x == n-1 -> [n - 2]
+            true -> [(x - 1), (x + 1)]
+          end
 
-            neighbor_pids = Enum.map(neighbors, fn i ->
-                {:ok, n} = Map.fetch(indexed_actors, i)
-                n end)
+          neighbor_pids = Enum.map(neighbors, fn i ->
+            {:ok, n} = Map.fetch(indexed_actors, i)
+            n end)
 
-            {:ok, actor} = Map.fetch(indexed_actors, x)
-            Map.put(acc, actor, neighbor_pids)
-            end)
-    end
+          {:ok, actor} = Map.fetch(indexed_actors, x)
+          Map.put(acc, actor, neighbor_pids)
+          end)
+  end
+
+  #  ---------------------   Determine neighbor nodes for 2D topology  ---------------------
+  def determine_nodes_rand2D(actors) do
+
+    n = length(actors)
+    number = trunc(:math.ceil(:math.sqrt(n)))
+    indexed_actors = Stream.with_index(actors, 0) |> Enum.reduce(%{}, fn({y,number}, acc) -> Map.put(acc, number, y) end)
+
+    #final_neighbors = Enum.reduce(0..n-1, %{}, fn i,acc ->
+    Enum.reduce(0..n-1, %{}, fn i,acc ->
+      neighbors = Enum.reduce(1..4, %{}, fn (j, acc) ->
+        cond do
+        (j == 1) && ((i - number) >= 0) ->
+          Map.put(acc, j, (i - number))
+
+        (j == 2) && ((i + number) < n) ->
+          Map.put(acc, j, (i+number))
+
+        (j == 3) && (rem((i - 1), number) != (number - 1)) && ((i - 1) >= 0) ->
+          Map.put(acc, j, (i - 1))
+        
+        (j == 4) && (rem((i + 1) , number) != 0) && ((i+1)< n) ->
+          Map.put(acc, j, (i + 1))
+          
+        true ->
+          acc 
+        end 
+      end)
+
+      neighbors = Map.values(neighbors)
+
+      neighbors = neighbors ++ get_random_node(neighbors, i, n-1)
+
+      neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = Map.fetch(indexed_actors, x)
+        n end)
+
+     {:ok, actor} = Map.fetch(indexed_actors, i)
+     Map.put(acc, actor, neighbor_pids)
+    end)
+  end
   
-    #  ---------------------   Determine neighbor nodes for 3D topology  ---------------------
-    def determine_nodes_3D(actors, topology) do
+#  ---------------------   Determine neighbor nodes for 3D topology  ---------------------
+def determine_nodes_3D(actors) do
     n = length(actors)
     number = trunc(:math.ceil(cbrt(n)))
     indexed_actors = Stream.with_index(actors, 0) |> Enum.reduce(%{}, fn({y,number}, acc) -> Map.put(acc, number, y) end)
@@ -200,189 +235,34 @@ defmodule Proj2.Supervisor do
         upperlimit = (level + 1) * number * number
         lowerlimit = level * number * number
         neighbors = Enum.reduce(1..6, %{}, fn (j, acc) ->
-            # Get 6 neighbors
-            if (j == 1) && ((i - number) >= lowerlimit) do 
-            Map.put(acc, j, (i - number))
-            else
-            if (j == 2) && ((i + number) < upperlimit) && ((i+number)< n) do
-                Map.put(acc, j, (i+number))
-            else
-                if (j == 3) && (rem((i - 1), number) != (number - 1)) && ((i - 1) >= 0) do
-                Map.put(acc, j, (i - 1))
-                else
-                if (j == 4) && (rem((i + 1) , number) != 0) && ((i+1)< n) do
-                    Map.put(acc, j, (i + 1))
-                else
-                    if (j == 5) && (i + (number * number) < n) do
-                    Map.put(acc, j, (i + (number * number)))
-                    else
-                    if (j == 6) && (i - (number * number) >= 0) do
-                        Map.put(acc, j, (i - (number * number)))
-                    else
-                        acc 
-                    end
-                    end
-                end
-                end
+           # Get 6 neighbors
+           cond do
+            (j == 1) && ((i - number) >= lowerlimit) -> 
+              Map.put(acc, j, (i - number))
+            (j == 2) && ((i + number) < upperlimit) && ((i+number)< n) ->
+              Map.put(acc, j, (i+number))
+            (j == 3) && (rem((i - 1), number) != (number - 1)) && ((i - 1) >= 0) ->
+              Map.put(acc, j, (i - 1))
+            (j == 4) && (rem((i + 1) , number) != 0) && ((i+1)< n) ->
+              Map.put(acc, j, (i + 1))
+            (j == 5) && (i + (number * number) < n) ->
+              Map.put(acc, j, (i + (number * number)))
+            (j == 6) && (i - (number * number) >= 0) ->
+              Map.put(acc, j, (i - (number * number)))
+            true ->
+              acc 
             end
-            end
-        end)
+          end)
 
         neighbors = Map.values(neighbors)
 
-        neighbors =
-        case topology do
-            "imp3D" -> neighbors ++ get_random_node(neighbors, i, n-1) 
-            _ -> neighbors
-        end
-
         neighbor_pids = Enum.map(neighbors, fn x ->
-            {:ok, n} = Map.fetch(indexed_actors, x)
-            n end)
-
-        {:ok, actor} = Map.fetch(indexed_actors, i)
-        Map.put(acc, actor, neighbor_pids)
-        end)
-    end
+          {:ok, n} = Map.fetch(indexed_actors, x)
+          n end)
   
-    #  ---------------------   Determine neighbor nodes for 2D topology  ---------------------
-    def determine_nodes_2D(actors, topology) do
-
-        n = length(actors)
-        number = trunc(:math.ceil(:math.sqrt(n)))
-        indexed_actors = Stream.with_index(actors, 0) |> Enum.reduce(%{}, fn({y,number}, acc) -> Map.put(acc, number, y) end)
-
-        #final_neighbors = Enum.reduce(0..n-1, %{}, fn i,acc ->
-        Enum.reduce(0..n-1, %{}, fn i,acc ->
-        neighbors = Enum.reduce(1..4, %{}, fn (j, acc) ->
-            if (j == 1) && ((i - number) >= 0) do
-            Map.put(acc, j, (i - number))
-            else
-            if (j == 2) && ((i + number) < n) do
-                Map.put(acc, j, (i+number))
-            else
-                if (j == 3) && (rem((i - 1), number) != (number - 1)) && ((i - 1) >= 0) do
-                Map.put(acc, j, (i - 1))
-                else
-                if (j == 4) && (rem((i + 1) , number) != 0) && ((i+1)< n) do
-                    Map.put(acc, j, (i + 1))
-                else
-                    acc 
-                end
-                end
-            end
-            end
-        end)
-
-        neighbors = Map.values(neighbors)
-
-        neighbors =
-        case topology do
-            "rand2D" ->
-            neighbors ++ get_random_node(neighbors, i, n-1) 
-            _ -> neighbors
-        end
-
-        neighbor_pids = Enum.map(neighbors, fn x ->
-            {:ok, n} = Map.fetch(indexed_actors, x)
-            n end)
-
-        {:ok, actor} = Map.fetch(indexed_actors, i)
-        Map.put(acc, actor, neighbor_pids)
-        end)
-    end
-
-    #  ---------------------   Determine neighbor nodes for Torus topology  ---------------------
-    def determine_nodes_torus(actors) do
-        n = length(actors)
-        indexed_actors = Stream.with_index(actors, 0) |> Enum.reduce(%{}, fn({y,number}, acc) -> Map.put(acc, number, y) end)
-        
-        {ringPts, tubePts}=
-        cond do
-        n >= 10000 ->
-            {1000, trunc(:math.ceil((1/1000) * n))}
-        n >= 1000 && n < 10000 ->
-            {100, trunc(:math.ceil((1/100) * n))}
-        n < 1000 ->
-            {10, trunc(:math.ceil((1/10) * n))}
-        end
-
-        Enum.reduce(0..ringPts-1, %{}, fn r, acc ->
-        Enum.reduce(0..tubePts-1, acc, fn t, acc ->
-            i = r + t * ringPts
-            if(i<n) do
-            neighbors = []
-            neighbor1 = (r-1) + t * ringPts
-            neighbors =
-            if(neighbor1 > 0 && neighbor1 < n) do
-                neighbors ++ [neighbor1]
-            else
-                neighbors
-            end
-            neighbor2 = (r+1) + t * ringPts
-            neighbors =
-            if(neighbor2 > 0 && neighbor2 < n) do
-                neighbors ++ [neighbor2]
-            else
-                neighbors
-            end
-            neighbor3 = (r-1) + (t-1) * ringPts
-            neighbors =
-            if(neighbor3 > 0 && neighbor3 < n) do
-                neighbors ++ [neighbor3]
-            else
-                neighbors
-            end
-            neighbor4 = (r+1) + (t+1) * ringPts
-            neighbors =
-            if(neighbor4 > 0 && neighbor4 < n) do
-                neighbors ++ [neighbor4]
-            else
-                neighbors
-            end
-            neighbor5 = r + (t-1) * ringPts
-            neighbors =
-            if(neighbor5 > 0 && neighbor5 < n) do
-                neighbors ++ [neighbor5]
-            else
-                neighbors
-            end
-            neighbor6 = r + (t+1) * ringPts
-            neighbors =
-            if(neighbor6 > 0 && neighbor6 < n) do
-                neighbors ++ [neighbor6]
-            else
-                neighbors
-            end
-            neighbor7 = (r + 1) + ((t - 1) * ringPts)
-            neighbors =
-            if(neighbor7 > 0 && neighbor7 < n) do
-                neighbors ++ [neighbor7]
-            else
-                neighbors
-            end
-            neighbor8 = (r - 1) + ((t + 1) * ringPts)
-            neighbors =
-            if(neighbor8 > 0 && neighbor8 < n) do
-                neighbors ++ [neighbor8]
-            else
-                neighbors
-            end
-            
-            #neighbors = Map.values(neighbors)
-
-            neighbors = neighbors ++ get_random_node(neighbors, i, n-1) 
-            
-            neighbor_pids = Enum.map(neighbors, fn x ->
-                {:ok, n} = Map.fetch(indexed_actors, x)
-                n end)
-            {:ok, actor} = Map.fetch(indexed_actors, i)
-            Map.put(acc, actor, neighbor_pids)
-            else 
-            acc
-            end
-        end)
-        end)
+       {:ok, actor} = Map.fetch(indexed_actors, i)
+       Map.put(acc, actor, neighbor_pids)
+      end)
     end
     
     #  ------------------------   Set neighbors  ------------------------
