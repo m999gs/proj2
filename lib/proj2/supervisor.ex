@@ -85,14 +85,14 @@ defmodule Proj2.Supervisor do
             "3Dtorus" ->
                   IO.puts("Implementing 3D torus grid topology")
                   _neighbors = determine_nodes_3D(actors)
-            # "honeycomb" ->
-            #       IO.puts("Implementing honeycomb topology")
-            #       _neighbors = determine_nodes_honeycomb(actors)
-            # "randhoneycomb" ->
-            #       IO.puts("Implementing honeycomb topology with random neighbors")
-            #       _neighbors = determine_nodes_full(actors)
+            "honeycomb" ->
+                  IO.puts("Implementing honeycomb topology")
+                  _neighbors = determine_nodes_honeycomb(actors,topology)
+            "randhoneycomb" ->
+                  IO.puts("Implementing honeycomb topology with random neighbors")
+                  _neighbors = determine_nodes_honeycomb(actors,topology)
              _ ->
-                  IO.puts "Please use one of full/3D/rand2D/torus/line/impLine as topology"
+                  IO.puts "Please use one of full | line | rand2D | 3Dtorus | honeycomb | randhoneycomb as topology"
                   System.halt(0)
           end
             
@@ -264,7 +264,53 @@ def determine_nodes_3D(actors) do
        Map.put(acc, actor, neighbor_pids)
       end)
     end
-    
+
+    # ---------------------------------- HONEYCOMB ---------------------------------
+    def determine_nodes_honeycomb(actors,topology) do
+      n = length(actors)
+      number = trunc(:math.ceil(:math.sqrt(n)))
+      indexed_actors = Stream.with_index(actors, 0) |> Enum.reduce(%{}, fn({y,number}, acc) -> Map.put(acc, number, y) end)
+  
+      #final_neighbors = Enum.reduce(0..n-1, %{}, fn i,acc ->
+      Enum.reduce(0..n-1, %{}, fn i,acc ->
+        neighbors = Enum.reduce(1..4, %{}, fn (j, acc) ->
+          cond do
+          (j == 1) && ((i - number) >= 0) ->
+            Map.put(acc, j, (i - number))
+  
+          (j == 2) && ((i + number) < n) ->
+            Map.put(acc, j, (i + number))
+  
+          (j == 3) && (rem((i - 1), number) != (number - 1)) && ((i - 1) >= 0) ->
+            Map.put(acc, j, (i - 1))
+          
+          (j == 4) && (rem((i + 1) , number) != 0) && ((i+1)< n) ->
+            Map.put(acc, j, (i + 1))
+            
+          true ->
+            acc 
+          end 
+        end)
+  
+        neighbors = Map.values(neighbors)
+        
+          neighbors =
+        case topology do
+          "randhoneycomb" ->
+            neighbors ++ get_random_node(neighbors, i, n-1) 
+          _ -> 
+            neighbors
+        end
+  
+        neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = Map.fetch(indexed_actors, x)
+          n end)
+  
+       {:ok, actor} = Map.fetch(indexed_actors, i)
+       Map.put(acc, actor, neighbor_pids)
+      end)
+
+    end
+
     #  ------------------------   Set neighbors  ------------------------
     def set_neighbors(neighbors) do
         for  {number, y}  <-  neighbors  do
