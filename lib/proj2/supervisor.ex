@@ -193,20 +193,26 @@ defmodule Proj2.Supervisor do
     #final_neighbors = Enum.reduce(0..n-1, %{}, fn i,acc ->
     Enum.reduce(0..n-1, %{}, fn i,acc ->
       neighbors = Enum.reduce(1..4, %{}, fn (j, acc) ->
+        
         cond do
         (j == 1) && ((i - number) >= 0) ->
+          IO.puts(to_string(i)<>"    "<>to_string(j))
           Map.put(acc, j, (i - number))
 
         (j == 2) && ((i + number) < n) ->
+          IO.puts(to_string(i)<>"    "<>to_string(j))
           Map.put(acc, j, (i+number))
 
         (j == 3) && (rem((i - 1), number) != (number - 1)) && ((i - 1) >= 0) ->
+          IO.puts(to_string(i)<>"    "<>to_string(j))
           Map.put(acc, j, (i - 1))
         
         (j == 4) && (rem((i + 1) , number) != 0) && ((i+1)< n) ->
+          IO.puts(to_string(i)<>"    "<>to_string(j))
           Map.put(acc, j, (i + 1))
           
         true ->
+          IO.puts(to_string(i)<>"  acc  "<>to_string(j))
           acc 
         end 
       end)
@@ -232,8 +238,9 @@ def determine_nodes_3D(actors) do
     #final_neighbors = Enum.reduce(0..n-1, %{}, fn i,acc ->
     Enum.reduce(0..n-1, %{}, fn i,acc ->
         level = trunc(:math.floor(i / (number * number)))
-        upperlimit = (level + 1) * number * number
         lowerlimit = level * number * number
+        upperlimit = (level + 1) * number * number
+        
         neighbors = Enum.reduce(1..6, %{}, fn (j, acc) ->
            # Get 6 neighbors
            cond do
@@ -318,7 +325,7 @@ def determine_nodes_3D(actors) do
         end
     end
 
-    #  --------   Get Random neigbor for rand2D, imp3D, impLine  --------
+    #  --------   Get Random neigbor for rand2D  --------
     def get_random_node(neighbors, i, totalNodes) do
         random_node_index =  :rand.uniform(totalNodes)
         neighbors = neighbors ++ [i]
@@ -333,6 +340,7 @@ def determine_nodes_3D(actors) do
     @spec cbrt(number) :: number
     def cbrt(x) when is_number(x) do
         cube = :math.pow(x, 1/3)
+        IO.puts(cube)
         cond do
         is_float(cube) == false ->
             cube
