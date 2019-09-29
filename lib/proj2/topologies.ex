@@ -15,7 +15,7 @@ def creating_line_network(actors) do
           x == n-1 -> [n - 2]
           true -> [(x - 1), (x + 1)]
         end
-
+        IO.inspect(neighbors)
         neighbor_pids = Enum.map(neighbors, fn i ->
           {:ok, n} = Map.fetch(indexed_actors, i)
           n end)
@@ -29,7 +29,7 @@ end
 def creating_rand2D_network(actors) do
 
   n = length(actors)
-  number = trunc(:math.ceil(:math.sqrt(n)))
+  number = trunc(:math.floor(:math.sqrt(n)))
   indexed_actors = Stream.with_index(actors, 0) |> Enum.reduce(%{}, fn({y,number}, acc) -> Map.put(acc, number, y) end)
 
   #final_neighbors = Enum.reduce(0..n-1, %{}, fn i,acc ->
@@ -60,7 +60,7 @@ def creating_rand2D_network(actors) do
 
     neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = Map.fetch(indexed_actors, x)
       n end)
-
+    IO.inspect(neighbors)
     {:ok, actor} = Map.fetch(indexed_actors, i)
     Map.put(acc, actor, neighbor_pids)
   end)
@@ -128,7 +128,7 @@ def creating_3Dtorus_network(actors) do
         end)
 
       neighbors = Map.values(neighbors)
-        IO.inspect(neighbors)
+
       neighbor_pids = Enum.map(neighbors, fn x ->
         {:ok, n} = Map.fetch(indexed_actors, x)
         n end)
@@ -141,23 +141,25 @@ def creating_3Dtorus_network(actors) do
   # ---------------------------------- HONEYCOMB ---------------------------------
   def creating_honeycomb_network(actors,topology) do
     n = length(actors)
-    number = trunc(:math.ceil(:math.sqrt(n)))
+    number = trunc(:math.floor(cbrt(n)))
+    number = ( 2 * number ) +1
     indexed_actors = Stream.with_index(actors, 0) |> Enum.reduce(%{}, fn({y,number}, acc) -> Map.put(acc, number, y) end)
 
     #final_neighbors = Enum.reduce(0..n-1, %{}, fn i,acc ->
     Enum.reduce(0..n-1, %{}, fn i,acc ->
-      neighbors = Enum.reduce(1..4, %{}, fn (j, acc) ->
+      neighbors = Enum.reduce(1..3, %{}, fn (j, acc) ->
         cond do
-        (j == 1) && ((i - number) >= 0) ->
-          Map.put(acc, j, (i - number))
+        # (j == 1) && ((i - number) >= 0) ->    #
+        #   IO.puts(to_string(i)<>"    "<>to_string(j))
+        #   Map.put(acc, j, (i - number))
 
-        (j == 2) && ((i + number) < n) ->
+        (j == 1) && rem(i,2)==0 && ((i + number) < n) ->
           Map.put(acc, j, (i + number))
 
-        (j == 3) && (rem((i - 1), number) != (number - 1)) && ((i - 1) >= 0) ->
+        (j == 2) && (rem((i - 1), number) != (number - 1)) && ((i - 1) >= 0) ->
           Map.put(acc, j, (i - 1))
         
-        (j == 4) && (rem((i + 1) , number) != 0) && ((i+1)< n) ->
+        (j == 3) && (rem((i + 1) , number) != 0) && ((i+1)< n) ->
           Map.put(acc, j, (i + 1))
           
         true ->
@@ -166,7 +168,6 @@ def creating_3Dtorus_network(actors) do
       end)
 
       neighbors = Map.values(neighbors)
-      
         neighbors =
       case topology do
         "randhoneycomb" ->
@@ -178,6 +179,8 @@ def creating_3Dtorus_network(actors) do
       neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = Map.fetch(indexed_actors, x)
         n end)
 
+
+        IO.inspect(neighbors)
       {:ok, actor} = Map.fetch(indexed_actors, i)
       Map.put(acc, actor, neighbor_pids)
     end)
