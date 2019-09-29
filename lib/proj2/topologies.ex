@@ -86,14 +86,14 @@ def creating_3Dtorus_network(actors) do
             if ((i - number) >= lowerlimit) do
               Map.put(acc, j, (i - number))
             else 
-              acc
+              Map.put(acc, j, Enum.reduce( i..n , i , fn(_,acc)-> if acc < upperlimit && acc < n do acc + number else acc end end) - number)
             end 
             
           (j == 2) ->   #bottom
             if ((i + number) < upperlimit) && ((i+number)< n) do
               Map.put(acc, j, (i+number))
             else
-              acc
+              Map.put(acc, j, Enum.reduce(i..0, i , fn(_,acc)-> if acc >= lowerlimit do acc - number else acc end end) + number)
             end
 
           (j == 3) ->   #left
