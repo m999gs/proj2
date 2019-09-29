@@ -74,22 +74,22 @@ defmodule Proj2.Supervisor do
         case topology do
             "full" ->
                   IO.puts "Implementing full topology"
-                  _neighbors = Proj2.Topologies.determine_nodes_full(actors)
+                  _neighbors = Proj2.Topologies.creating_full_network(actors)
             "line" ->
                   IO.puts "Implementing line topology"
-                  _neighbors = Proj2.Topologies.determine_nodes_line(actors)
+                  _neighbors = Proj2.Topologies.creating_line_network(actors)
             "rand2D" ->
                   IO.puts "Implementing random 2D topology"
-                  _neighbors = Proj2.Topologies.determine_nodes_rand2D(actors)
+                  _neighbors = Proj2.Topologies.creating_rand2D_network(actors)
             "3Dtorus" ->
                   IO.puts("Implementing 3D torus grid topology")
-                  _neighbors = Proj2.Topologies.determine_nodes_3D(actors)
+                  _neighbors = Proj2.Topologies.creating_3Dtorus_network(actors)
             "honeycomb" ->
                   IO.puts("Implementing honeycomb topology")
-                  _neighbors = Proj2.Topologies.determine_nodes_honeycomb(actors,topology)
+                  _neighbors = Proj2.Topologies.creating_honeycomb_network(actors,topology)
             "randhoneycomb" ->
                   IO.puts("Implementing honeycomb topology with random neighbors")
-                  _neighbors = Proj2.Topologies.determine_nodes_honeycomb(actors,topology)
+                  _neighbors = Proj2.Topologies.creating_honeycomb_network(actors,topology)
              _ ->
                   IO.puts "Please use one of full | line | rand2D | 3Dtorus | honeycomb | randhoneycomb as topology"
                   System.halt(0)
