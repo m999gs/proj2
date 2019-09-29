@@ -2,9 +2,9 @@ defmodule Proj2.Server do
   use GenServer
 
   def init(x) do
-      if is_list(x) do #runs on push-sum
+      if is_list(x) do  #runs on push-sum
           {:ok, %{"s" => List.first(x), "rumour" => List.last(x), "w" => 1, "s_old_2" => 1, "w_old_2" => 1, "diff1" => 1, "diff2" => 1, "neighbors" => []}}
-      else #runs on gossip
+      else              #runs on gossip
           {:ok, %{"rumour" => x, "count" => 0, "neighbors" => []}}
       end
   end
@@ -43,39 +43,30 @@ defmodule Proj2.Server do
       if(abs(s_new/w_new - s_old/w_old) < :math.pow(10, -10) && abs(s_old/w_old - s_old_2/w_old_2) < :math.pow(10, -10)) do
         GenServer.cast(sender, {:remove_neighbor, self()})
       else
-          if(existing_rumour == "") do
-            Map.put(state, "rumour", rumour)
-            [{_, spread}] = :ets.lookup(:count, "spread")
-            :ets.insert(:count, {"spread", spread + 1})
-            
+            if(existing_rumour == "") do
+                Map.put(state, "rumour", rumour)
+                [{_, spread}] = :ets.lookup(:count, "spread")
+                :ets.insert(:count, {"spread", spread + 1})
+            end
             Map.put(state, "s", s_new)
             Map.put(state, "w", w_new)
             Map.put(state, "s_old_2", s_old)
             Map.put(state, "w_old_2", w_old)
-            Map.put(state, "diff1", s_new/w_new - s_old/w_old)
-            Map.put(state, "diff2", s_old/w_old - s_old_2/w_old_2)
+            Map.put(state, "diff1", s_new / w_new - s_old / w_old)
+            Map.put(state, "diff2", s_old / w_old - s_old_2 / w_old_2)
             {:noreply, state}
-          else 
-            Map.put(state, "s", s_new)
-            Map.put(state, "w", w_new)
-            Map.put(state, "s_old_2", s_old)
-            Map.put(state, "w_old_2", w_old)
-            Map.put(state, "diff1", s_new/w_new - s_old/w_old)
-            Map.put(state, "diff2", s_old/w_old - s_old_2/w_old_2)
-            {:noreply, state}
-          end
       end
   end
 
   # -------------------------   Handle states for Gossip Algorithm   -------------------------
   def handle_cast({:send_message}, state) do
-      {:ok, rumour} = Map.fetch(state, "rumour")
-      {:ok, neighbors} = Map.fetch(state, "neighbors")
+        {:ok, rumour} = Map.fetch(state, "rumour")
+        {:ok, neighbors} = Map.fetch(state, "neighbors")
 
-      if (rumour != "" && length(neighbors) > 0) do
-          _ = GenServer.cast(Enum.random(neighbors), {:receive_message, rumour, self()})
-      end
-      {:noreply, state}
+        if (rumour != "" && length(neighbors) > 0) do
+            _ = GenServer.cast(Enum.random(neighbors), {:receive_message, rumour, self()})
+        end
+        {:noreply, state}
   end
 
   # -------------------------   Handle states for Push-sum Algorithm   -------------------------
@@ -88,7 +79,7 @@ defmodule Proj2.Server do
         s = s/2
         w = w/2
         state = Map.put(state, "s", s)
-        state = Map.put(state, "w", w)
+        Map.put(state, "w", w)
         GenServer.cast(Enum.random(neighbors), {:receive_message_push_sum, self(), s, w, rumour})
       end
       {:noreply, state}

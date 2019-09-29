@@ -15,7 +15,7 @@ def creating_line_network(actors) do
           x == n-1 -> [n - 2]
           true -> [(x - 1), (x + 1)]
         end
-
+        IO.inspect(neighbors)
         neighbor_pids = Enum.map(neighbors, fn i ->
           {:ok, n} = Map.fetch(indexed_actors, i)
           n end)
@@ -29,7 +29,7 @@ end
 def creating_rand2D_network(actors) do
 
   n = length(actors)
-  number = trunc(:math.ceil(:math.sqrt(n)))
+  number = trunc(:math.floor(:math.sqrt(n)))
   indexed_actors = Stream.with_index(actors, 0) |> Enum.reduce(%{}, fn({y,number}, acc) -> Map.put(acc, number, y) end)
 
   #final_neighbors = Enum.reduce(0..n-1, %{}, fn i,acc ->
@@ -60,7 +60,7 @@ def creating_rand2D_network(actors) do
 
     neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = Map.fetch(indexed_actors, x)
       n end)
-
+    IO.inspect(neighbors)
     {:ok, actor} = Map.fetch(indexed_actors, i)
     Map.put(acc, actor, neighbor_pids)
   end)
@@ -86,14 +86,14 @@ def creating_3Dtorus_network(actors) do
             if ((i - number) >= lowerlimit) do
               Map.put(acc, j, (i - number))
             else 
-              acc
+              Map.put(acc, j, Enum.reduce( i..n , i , fn(_,acc)-> if acc < upperlimit && acc < n do acc + number else acc end end) - number)
             end 
             
           (j == 2) ->   #bottom
             if ((i + number) < upperlimit) && ((i+number)< n) do
               Map.put(acc, j, (i+number))
             else
-              acc
+              Map.put(acc, j, Enum.reduce(i..0, i , fn(_,acc)-> if acc >= lowerlimit do acc - number else acc end end) + number)
             end
 
           (j == 3) ->   #left
@@ -128,7 +128,7 @@ def creating_3Dtorus_network(actors) do
         end)
 
       neighbors = Map.values(neighbors)
-        IO.inspect(neighbors)
+
       neighbor_pids = Enum.map(neighbors, fn x ->
         {:ok, n} = Map.fetch(indexed_actors, x)
         n end)
@@ -187,6 +187,8 @@ def creating_3Dtorus_network(actors) do
       neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = Map.fetch(indexed_actors, x)
         n end)
 
+
+        IO.inspect(neighbors)
       {:ok, actor} = Map.fetch(indexed_actors, i)
       Map.put(acc, actor, neighbor_pids)
     end)
