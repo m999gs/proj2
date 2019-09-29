@@ -15,7 +15,6 @@ def creating_line_network(actors) do
           x == n-1 -> [n - 2]
           true -> [(x - 1), (x + 1)]
         end
-        IO.inspect(neighbors)
         neighbor_pids = Enum.map(neighbors, fn i ->
           {:ok, n} = Map.fetch(indexed_actors, i)
           n end)
@@ -60,7 +59,6 @@ def creating_rand2D_network(actors) do
 
     neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = Map.fetch(indexed_actors, x)
       n end)
-    IO.inspect(neighbors)
     {:ok, actor} = Map.fetch(indexed_actors, i)
     Map.put(acc, actor, neighbor_pids)
   end)
@@ -172,9 +170,6 @@ def creating_3Dtorus_network(actors) do
         end 
       end)
 
-      # uncomment this
-      # IO.inspect neighbors
-
       neighbors = Map.values(neighbors)
         neighbors =
       case topology do
@@ -187,8 +182,6 @@ def creating_3Dtorus_network(actors) do
       neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = Map.fetch(indexed_actors, x)
         n end)
 
-
-        IO.inspect(neighbors)
       {:ok, actor} = Map.fetch(indexed_actors, i)
       Map.put(acc, actor, neighbor_pids)
     end)
