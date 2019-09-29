@@ -141,32 +141,41 @@ def creating_3Dtorus_network(actors) do
   # ---------------------------------- HONEYCOMB ---------------------------------
   def creating_honeycomb_network(actors,topology) do
     n = length(actors)
-    number = trunc(:math.ceil(:math.sqrt(n)))
+    number = trunc(:math.floor(cbrt(n)))
     indexed_actors = Stream.with_index(actors, 0) |> Enum.reduce(%{}, fn({y,number}, acc) -> Map.put(acc, number, y) end)
 
-    #final_neighbors = Enum.reduce(0..n-1, %{}, fn i,acc ->
     Enum.reduce(0..n-1, %{}, fn i,acc ->
-      neighbors = Enum.reduce(1..4, %{}, fn (j, acc) ->
+      neighbors = Enum.reduce(1..3, %{}, fn (j, acc) ->
         cond do
-        (j == 1) && ((i - number) >= 0) ->
-          Map.put(acc, j, (i - number))
 
-        (j == 2) && ((i + number) < n) ->
-          Map.put(acc, j, (i + number))
-
-        (j == 3) && (rem((i - 1), number) != (number - 1)) && ((i - 1) >= 0) ->
+        (j == 1) && (i > 0) && (rem(i, ((2*number) + 1)) != 0) ->
           Map.put(acc, j, (i - 1))
-        
-        (j == 4) && (rem((i + 1) , number) != 0) && ((i+1)< n) ->
+
+        (j == 2) && (i != (2*number) || rem((i + 1), (2*number) + 1) != 0) && ((i+1) < n) ->
           Map.put(acc, j, (i + 1))
+
+        #Now for the 3rd neighbor; considering both odd and even numbers
+        (j == 3) ->
+            cond do
+              #even
+              rem(i, 2) == 0 && ((i + 2*number) < n) ->
+                Map.put(acc, j, (i + 2*number + 1))
+              #odd
+              rem(i, 2) == 1 && ((i - (2*number) + 1) > 0) ->
+                Map.put(acc, j, (i - 2*number - 1))
+              true ->
+                acc 
+            end
           
         true ->
           acc 
         end 
       end)
 
+      # uncomment this
+      # IO.inspect neighbors
+
       neighbors = Map.values(neighbors)
-      
         neighbors =
       case topology do
         "randhoneycomb" ->
@@ -183,6 +192,7 @@ def creating_3Dtorus_network(actors) do
     end)
 
   end
+
   #  --------   Get Random neigbor for rand2D  --------
   def get_random_node(neighbors, i, totalNodes) do
       random_node_index =  :rand.uniform(totalNodes)
