@@ -102,7 +102,7 @@ defmodule Proj2.Supervisor do
 
         case algorithm do
         "gossip" ->
-            gossip_algorithm(actors, neighbors, totalNodes, 0)
+            gossip_algorithm(actors, neighbors, totalNodes)
         "push-sum" ->
             push_sum_algorithm(actors, neighbors, totalNodes)
         end
@@ -111,7 +111,7 @@ defmodule Proj2.Supervisor do
         System.halt(0)
     end
     #  -------------------------------   Start Gossip   -------------------------------  
-    def gossip_algorithm(actors, neighbors, totalNodes , temp) do
+    def gossip_algorithm(actors, neighbors, totalNodes) do
         for  {number, _}  <-  neighbors  do
         Proj2.Client.send_message(number)
         end
@@ -119,10 +119,10 @@ defmodule Proj2.Supervisor do
         actors = verify_actors_alive(actors)
         [{_, spread}] = :ets.lookup(:count, "spread")
         IO.inspect(spread)
-        if ((spread != totalNodes) && (length(actors) > 1) && temp != spread) do
+        if ((spread != totalNodes) && (length(actors) > 1)) do
             temp = spread
             neighbors = Enum.filter(neighbors, fn {number,_} -> Enum.member?(actors, number) end)
-            gossip_algorithm(actors, neighbors, totalNodes, temp)
+            gossip_algorithm(actors, neighbors, totalNodes)
         end
     end
 
