@@ -41,7 +41,7 @@ defmodule Proj2.Supervisor do
         Enum.map(1..totalNodes,
         fn x -> {:ok, actor} = 
         if x == middle_actor do
-            Proj2.Client.start_link("Rumour have started")
+            Proj2.Client.start_link("rumour")
         else
             Proj2.Client.start_link("")
         end
@@ -56,7 +56,7 @@ defmodule Proj2.Supervisor do
             if x == middle_actor do
                 x = Integer.to_string(x)
                 {x, _} = Float.parse(x)
-                Proj2.Client.start_link([x] ++ ["Rumour have started"])
+                Proj2.Client.start_link([x] ++ ["rumour"])
             else
                 x = Integer.to_string(x)
                 {x, _} = Float.parse(x)
@@ -118,7 +118,7 @@ defmodule Proj2.Supervisor do
 
         actors = verify_actors_alive(actors)
         [{_, spread}] = :ets.lookup(:count, "spread")
-        IO.inspect(spread)
+        
         if ((spread != totalNodes) && (length(actors) > 1)) do
             temp = spread
             neighbors = Enum.filter(neighbors, fn {number,_} -> Enum.member?(actors, number) end)
