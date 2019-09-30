@@ -8,7 +8,7 @@
 
 Gossip type algorithms can be used both for group communication and for aggregate computation. The goal of this project is to determine the convergence of such algorithms through a simulator based on actors written in Elixir. Since actors in Elixir are fully asynchronous, the particular type of Gossip implemented is the so-called Asynchronous Gossip.
 
-All the information is in project2.pdf file of this repository.
+All the information is in project2.pdf file of this repository. https://github.com/m999gs/proj2/blob/master/Project2.pdf
 
 ## **INSTALLATION AND RUN** 
 
@@ -68,17 +68,29 @@ Step 4(For Windows user): **$** escript proj2 100 3Dtorus gossip <br />
    Largest network tested:
    
    For Gossip Algorithm
-   1. Full -  10,000
-   2. Line  - 10,000
-   3. Rand 2D - 1,50,000
-   4. 3D Torus - 1,00,000
-   5. Honeycomb - 50,000
-   6. Rand Honeycomb - 1,50,000 
+   
+    1. full  -  10,000
+    
+    2. line  - 10,000
+    
+    3. rand2D - 1,50,000
+    
+    4. 3Dtorus  - 1,00,000
+    
+    5. honeycomb - 50,000
+    
+    6. randhoneycomb - 1,50,000 
    
    For Push-sum Algorithm
-   1. Full -  10,000
-   2. Line  - 5,000
-   3. Rand 2D - 
-   4. 3D Torus - 
-   5. Honeycomb - 
-   6. Rand Honeycomb -  
+   
+    1. full  -  10,000
+    
+    2. line  - 5,000
+    
+    3. rand2D - 
+    
+    4. 3Dtorus  - 
+    
+    5. honeycomb - 
+    
+    6. randhoneycomb - 
