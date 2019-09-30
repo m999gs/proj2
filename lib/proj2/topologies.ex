@@ -15,7 +15,7 @@ def creating_line_network(actors) do
           x == n-1 -> [n - 2]
           true -> [(x - 1), (x + 1)]
         end
-        IO.inspect(neighbors)
+        
         neighbor_pids = Enum.map(neighbors, fn i ->
           {:ok, n} = Map.fetch(indexed_actors, i)
           n end)
@@ -60,7 +60,7 @@ def creating_rand2D_network(actors) do
 
     neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = Map.fetch(indexed_actors, x)
       n end)
-    IO.inspect(neighbors)
+      
     {:ok, actor} = Map.fetch(indexed_actors, i)
     Map.put(acc, actor, neighbor_pids)
   end)
@@ -149,17 +149,16 @@ def creating_3Dtorus_network(actors) do
     Enum.reduce(0..n-1, %{}, fn i,acc ->
       neighbors = Enum.reduce(1..3, %{}, fn (j, acc) ->
         cond do
-        # (j == 1) && ((i - number) >= 0) ->    #
-        #   IO.puts(to_string(i)<>"    "<>to_string(j))
-        #   Map.put(acc, j, (i - number))
+        (j == 1) && rem(i,2)!=0 && ((i - number) >= 0) ->     # odd top addition
+          Map.put(acc, j, (i - number))
 
-        (j == 1) && rem(i,2)==0 && ((i + number) < n) ->
+        (j == 1) && rem(i,2)==0 && ((i + number) < n) ->      # even bottom addition
           Map.put(acc, j, (i + number))
 
-        (j == 2) && (rem((i - 1), number) != (number - 1)) && ((i - 1) >= 0) ->
+        (j == 2) && (rem((i - 1), number) != (number - 1)) && ((i - 1) >= 0) -> # left addition
           Map.put(acc, j, (i - 1))
         
-        (j == 3) && (rem((i + 1) , number) != 0) && ((i+1)< n) ->
+        (j == 3) && (rem((i + 1) , number) != 0) && ((i+1)< n) ->               #right addition
           Map.put(acc, j, (i + 1))
           
         true ->
