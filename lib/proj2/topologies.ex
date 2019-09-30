@@ -56,6 +56,7 @@ def creating_rand2D_network(actors) do
 
     neighbors = Map.values(neighbors)
 
+
     neighbors = neighbors ++ get_random_node(neighbors, i, n-1)
 
     neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = Map.fetch(indexed_actors, x)
@@ -142,6 +143,7 @@ def creating_3Dtorus_network(actors) do
   def creating_honeycomb_network(actors,topology) do
     n = length(actors)
     number = trunc(:math.floor(cbrt(n)))
+    number = (2* number) + 1
     indexed_actors = Stream.with_index(actors, 0) |> Enum.reduce(%{}, fn({y,number}, acc) -> Map.put(acc, number, y) end)
 
     Enum.reduce(0..n-1, %{}, fn i,acc ->
@@ -176,6 +178,8 @@ def creating_3Dtorus_network(actors) do
           neighbors
       end
       # IO.inspect neighbors
+
+      IO.inspect neighbors
 
       neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = 
       Map.fetch(indexed_actors, x)
