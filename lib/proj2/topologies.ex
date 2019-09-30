@@ -15,7 +15,10 @@ def creating_line_network(actors) do
           x == n-1 -> [n - 2]
           true -> [(x - 1), (x + 1)]
         end
+<<<<<<< HEAD
         
+=======
+>>>>>>> b1edd3d0fb24da9647f78ca20baba8303d23b397
         neighbor_pids = Enum.map(neighbors, fn i ->
           {:ok, n} = Map.fetch(indexed_actors, i)
           n end)
@@ -60,7 +63,10 @@ def creating_rand2D_network(actors) do
 
     neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = Map.fetch(indexed_actors, x)
       n end)
+<<<<<<< HEAD
    
+=======
+>>>>>>> b1edd3d0fb24da9647f78ca20baba8303d23b397
     {:ok, actor} = Map.fetch(indexed_actors, i)
     Map.put(acc, actor, neighbor_pids)
   end)

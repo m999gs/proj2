@@ -118,9 +118,7 @@ defmodule Proj2.Supervisor do
 
         actors = verify_actors_alive(actors)
         [{_, spread}] = :ets.lookup(:count, "spread")
-        
         if ((spread != totalNodes) && (length(actors) > 1)) do
-            temp = spread
             neighbors = Enum.filter(neighbors, fn {number,_} -> Enum.member?(actors, number) end)
             gossip_algorithm(actors, neighbors, totalNodes)
         end
