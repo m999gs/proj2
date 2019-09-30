@@ -16,22 +16,31 @@ All the information is in project2.pdf file of this repository.
 
 Open the Terminal on your machine <br />
 
-Step 1: $ git clone https://github.com/m999gs/proj2.git  (for cloning the project on local machine) <br />
+Step 1: **$** git clone https://github.com/m999gs/proj2.git  (for cloning the project on local machine) <br />
 
-Step 2: $ cd proj2/  <br />
+Step 2: **$** cd proj2/  <br />
 
-Step 3: $ mix escript.build <br />
+Step 3: **$** mix escript.build <br />
 
-Step 4(For Mac Users): $ ./proj2 100 3Dtorus gossip <br />
-Step 4(For Windows user): $ escript proj2 100 3Dtorus gossip <br />
+Step 4(For Mac Users): **$** ./proj2 100 3Dtorus gossip <br />
+Step 4(For Windows user): **$** escript proj2 100 3Dtorus gossip <br />
 
-Example: <br />
 
-  (base) Mohits-MacBook-Pro:proj2 mohitgarg$ ./proj2 5000 line push-sum <br />
+## Format of the arguments
+   (For Mac Users):    **$** ./proj2  argument1  argument2  argument3 <br />
+   (For Windows user): **$** escript proj2  argument1  argument2  argument3 <br />
+   
+   Where:<br />
+     Argument 1 is the number of actors (or nodes) in the network **(Any number greater than 1)**<br />
+     Argument 2 is the topology name **( full | line | rand2D | 3Dtorus | honeycomb | randhoneycomb )**<br />
+     Argument 3 is the algorithm name **( gossip | push-sum )**<br />
+
+**Example:** <br />
+  **(base) Mohits-MacBook-Pro:proj2 mohitgarg$** ./proj2 5000 line push-sum <br />
   Initializing push sum algorithm <br />
   Implementing line topology<br />
   Convergence Time: 366001 milliseconds<br />
-  (base) Mohits-MacBook-Pro:proj2 mohitgarg$<br />
+  **(base) Mohits-MacBook-Pro:proj2 mohitgarg$**<br />
 
 ## **Algorithms and Topologies Implemented**
   There are two algorithms in this project namely:
@@ -73,4 +82,3 @@ Example: <br />
    4. 3D Torus - 
    5. Honeycomb - 
    6. Rand Honeycomb -  
-
