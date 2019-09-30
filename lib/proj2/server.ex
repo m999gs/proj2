@@ -62,7 +62,7 @@ defmodule Proj2.Server do
   def handle_cast({:send_message}, state) do
         {:ok, rumour} = Map.fetch(state, "rumour")
         {:ok, neighbors} = Map.fetch(state, "neighbors")
-
+        # IO.inspect state
         if (rumour != "" && length(neighbors) > 0) do
             _ = GenServer.cast(Enum.random(neighbors), {:receive_message, rumour, self()})
         end

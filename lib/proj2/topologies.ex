@@ -15,7 +15,7 @@ def creating_line_network(actors) do
           x == n-1 -> [n - 2]
           true -> [(x - 1), (x + 1)]
         end
-        
+
         neighbor_pids = Enum.map(neighbors, fn i ->
           {:ok, n} = Map.fetch(indexed_actors, i)
           n end)
@@ -145,6 +145,7 @@ def creating_3Dtorus_network(actors) do
     indexed_actors = Stream.with_index(actors, 0) |> Enum.reduce(%{}, fn({y,number}, acc) -> Map.put(acc, number, y) end)
 
     Enum.reduce(0..n-1, %{}, fn i,acc ->
+      # IO.puts("i is #{i} \n")
       neighbors = Enum.reduce(1..3, %{}, fn (j, acc) ->
         cond do
 
@@ -158,25 +159,13 @@ def creating_3Dtorus_network(actors) do
           Map.put(acc, j, (i - 1))
         
         (j == 3) && (rem((i + 1) , number) != 0) && ((i+1)< n) ->               #right addition
-          Map.put(acc, j, (i + 1))
-
-        #Now for the 3rd neighbor; considering both odd and even numbers
-        (j == 3) ->
-            cond do
-              #even
-              rem(i, 2) == 0 && ((i + 2*number) < n) ->
-                Map.put(acc, j, (i + 2*number + 1))
-              #odd
-              rem(i, 2) == 1 && ((i - (2*number) + 1) > 0) ->
-                Map.put(acc, j, (i - 2*number - 1))
-              true ->
-                acc 
-            end
-          
+          Map.put(acc, j, (i + 1))          
         true ->
           acc 
         end 
       end)
+
+      # uncomment this
 
       neighbors = Map.values(neighbors)
         neighbors =
@@ -186,8 +175,10 @@ def creating_3Dtorus_network(actors) do
         _ -> 
           neighbors
       end
+      # IO.inspect neighbors
 
-      neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = Map.fetch(indexed_actors, x)
+      neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = 
+      Map.fetch(indexed_actors, x)
         n end)
 
       {:ok, actor} = Map.fetch(indexed_actors, i)
