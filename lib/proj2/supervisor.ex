@@ -9,13 +9,14 @@ defmodule Proj2.Supervisor do
         {_pid, totalNodes, topology, algorithm} = init_arg
         if totalNodes>1 do
             case algorithm do
+
                 "gossip" ->
                     IO.puts("Initializing gossip algorithm")
                     actors=Proj2.Gossip.initialize_gossip_actors(totalNodes);
                     initialize_algorithm(actors, topology, totalNodes, algorithm)
 
                 "push-sum" ->
-                    IO.puts("Initializing push sum algorithm")
+                    IO.puts("Initializing push-sum algorithm")
                     actors=Proj2.PushSum.initialize_actors_push_sum(totalNodes);
                     initialize_algorithm(actors, topology, totalNodes, algorithm)
                     
@@ -25,7 +26,7 @@ defmodule Proj2.Supervisor do
             end
 
         end
-    # {:ok, init_arg}   #Bad value 
+        
     children = [
       # Starts a worker by calling: Proj2.Worker.start_link(arg)
       # {Proj2.Worker, arg}
@@ -36,7 +37,9 @@ defmodule Proj2.Supervisor do
     Supervisor.init(children, strategy: :one_for_one)
     end
 
+    #initializing the topologies and starting the algorithm
     def initialize_algorithm(actors, topology, totalNodes, algorithm) do
+
         :ets.new(:count, [:set, :public, :named_table])
         :ets.insert(:count, {"spread", 0})
     
@@ -45,31 +48,32 @@ defmodule Proj2.Supervisor do
         case topology do
             "full" ->
                   IO.puts "Implementing full topology"
-                  _neighbors = Proj2.Topologies.creating_full_network(actors)
+                  _temp = Proj2.Topologies.creating_full_network(actors)
             "line" ->
                   IO.puts "Implementing line topology"
-                  _neighbors = Proj2.Topologies.creating_line_network(actors)
+                  _temp = Proj2.Topologies.creating_line_network(actors)
             "rand2D" ->
                   IO.puts "Implementing random 2D topology"
-                  _neighbors = Proj2.Topologies.creating_rand2D_network(actors)
+                  _temp = Proj2.Topologies.creating_rand2D_network(actors)
             "3Dtorus" ->
                   IO.puts("Implementing 3D torus grid topology")
-                  _neighbors = Proj2.Topologies.creating_3Dtorus_network(actors)
+                  _temp = Proj2.Topologies.creating_3Dtorus_network(actors)
             "honeycomb" ->
                   IO.puts("Implementing honeycomb topology")
-                  _neighbors = Proj2.Topologies.creating_honeycomb_network(actors,topology)
+                  _temp = Proj2.Topologies.creating_honeycomb_network(actors,topology)
             "randhoneycomb" ->
                   IO.puts("Implementing honeycomb topology with random neighbors")
-                  _neighbors = Proj2.Topologies.creating_honeycomb_network(actors,topology)
+                  _temp = Proj2.Topologies.creating_honeycomb_network(actors,topology)
              _ ->
-                  IO.puts "Please use one of full | line | rand2D | 3Dtorus | honeycomb | randhoneycomb as topology"
+                  IO.puts "Please use one of the full | line | rand2D | 3Dtorus | honeycomb | randhoneycomb as topology"
                   System.halt(0)
-          end
-          for  {number, y}  <-  neighbors  do
-            Proj2.Client.set_neighbors(number, y)
-          end
+        end
 
-        start_time = System.monotonic_time(:millisecond)
+        for  {number, y}  <-  neighbors  do
+        Proj2.Client.set_neighbors(number, y)           #setting the neighbors
+        end
+
+        start_time = System.monotonic_time(:millisecond)    # start time of convergence
 
         case algorithm do
         "gossip" ->
@@ -77,10 +81,10 @@ defmodule Proj2.Supervisor do
         "push-sum" ->
             Proj2.PushSum.push_sum_algorithm(actors, neighbors, totalNodes)
         end
-
+        
+        # printing the total convergence time by subtracting the current time from start-time.
         IO.puts "Convergence Time: " <> to_string(System.monotonic_time(:millisecond) - start_time) <> " milliseconds"
         System.halt(0)
     end
-
 
 end

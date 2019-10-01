@@ -2,15 +2,15 @@ defmodule Proj2.Server do
   use GenServer
 
   def init(x) do
-      if is_list(x) do  #runs on push-sum
+      if is_list(x) do  #runs on push-sum as per List trigger
           {:ok, %{"s" => List.first(x), "rumour" => List.last(x), "w" => 1, "s_old_2" => 1, "w_old_2" => 1, "diff1" => 1, "diff2" => 1, "neighbors" => []}}
       else              #runs on gossip
           {:ok, %{"rumour" => x, "count" => 0, "neighbors" => []}}
       end
   end
 
-  # -------------------------   Handle message for Gossip Algorithm   -------------------------
-  def handle_cast({:receive_message, rumour, sender}, state) do
+  
+  def handle_cast({:receive_gossip_message, rumour, sender}, state) do
       {:ok, count} = Map.fetch(state, "count")
       state = Map.put(state, "count", count + 1)
 
@@ -29,8 +29,8 @@ defmodule Proj2.Server do
           end
       end
   end
-  # -------------------------   Handle message for Push-sum Algorithm   -------------------------
-  def handle_cast({:receive_message_push_sum, sender, s, w, rumour}, state) do
+  
+  def handle_cast({:receive_push_sum_message, sender, s, w, rumour}, state) do
       {:ok, s_old} = Map.fetch(state, "s")
       {:ok, w_old} = Map.fetch(state, "w")
       {:ok, s_old_2} = Map.fetch(state, "s_old_2")
@@ -58,19 +58,17 @@ defmodule Proj2.Server do
       end
   end
 
-  # -------------------------   Handle states for Gossip Algorithm   -------------------------
-  def handle_cast({:send_message}, state) do
+  def handle_cast({:send_gossip_message}, state) do
         {:ok, rumour} = Map.fetch(state, "rumour")
         {:ok, neighbors} = Map.fetch(state, "neighbors")
-        # IO.inspect state
+        
         if (rumour != "" && length(neighbors) > 0) do
-            _ = GenServer.cast(Enum.random(neighbors), {:receive_message, rumour, self()})
+            _ = GenServer.cast(Enum.random(neighbors), {:receive_gossip_message, rumour, self()})
         end
         {:noreply, state}
   end
 
-  # -------------------------   Handle states for Push-sum Algorithm   -------------------------
-  def handle_cast({:send_message_push_sum}, state) do
+  def handle_cast({:send_pushsum_message}, state) do
       {:ok, s} = Map.fetch(state, "s")
       {:ok, w} = Map.fetch(state, "w")
       {:ok, rumour} = Map.fetch(state, "rumour")
@@ -80,7 +78,7 @@ defmodule Proj2.Server do
         w = w/2
         state = Map.put(state, "s", s)
         Map.put(state, "w", w)
-        GenServer.cast(Enum.random(neighbors), {:receive_message_push_sum, self(), s, w, rumour})
+        GenServer.cast(Enum.random(neighbors), {:receive_push_sum_message, self(), s, w, rumour})
       end
       {:noreply, state}
   end

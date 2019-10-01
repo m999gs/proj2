@@ -30,8 +30,5 @@ defmodule Proj2 do
         System.halt(0)
     end
   end
-
-  # defp output(timeSpent) do
-  #   IO.puts "Duration: #{timeSpent} seconds"
-  # end
+  
 end

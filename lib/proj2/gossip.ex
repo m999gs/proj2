@@ -10,7 +10,7 @@ defmodule Proj2.Gossip do
         end
         actor end)
     end
-    #  -------------------------------   Start Gossip   -------------------------------  
+    
     def gossip_algorithm(actors, neighbors, totalNodes) do
         for  {number, _}  <-  neighbors  do
         Proj2.Client.send_message(number)

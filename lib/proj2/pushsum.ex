@@ -17,7 +17,6 @@ defmodule Proj2.PushSum do
     end
     
     def push_sum_algorithm(actors, neighbors, totalNodes) do
-        #for  {number, y}  <-  neighbors  do
         for  {number, _}  <-  neighbors  do
         Proj2.Client.send_message_push_sum(number)
         end
