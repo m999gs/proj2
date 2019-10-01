@@ -4,7 +4,7 @@ defmodule Proj2.Gossip do
         Enum.map(1..totalNodes,
         fn x -> {:ok, actor} = 
         if x == middle_actor do
-            Proj2.Client.start_link("rumour")
+            Proj2.Client.start_link("rumor")
         else
             Proj2.Client.start_link("")
         end
@@ -13,7 +13,7 @@ defmodule Proj2.Gossip do
     
     def gossip_algorithm(actors, neighbors, totalNodes) do
         for  {number, _}  <-  neighbors  do
-        Proj2.Client.send_message(number)
+        Proj2.Client.message_send(number)
         end
 
         actors = is_gossip_node_alive(actors)

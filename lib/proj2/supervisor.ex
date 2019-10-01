@@ -48,29 +48,29 @@ defmodule Proj2.Supervisor do
         case topology do
             "full" ->
                   IO.puts "Implementing full topology"
-                  _temp = Proj2.Topologies.creating_full_network(actors)
+                  Proj2.Topologies.creating_full_network(actors)
             "line" ->
                   IO.puts "Implementing line topology"
-                  _temp = Proj2.Topologies.creating_line_network(actors)
+                  Proj2.Topologies.creating_line_network(actors)
             "rand2D" ->
                   IO.puts "Implementing random 2D topology"
-                  _temp = Proj2.Topologies.creating_rand2D_network(actors)
+                  Proj2.Topologies.creating_rand2D_network(actors)
             "3Dtorus" ->
                   IO.puts("Implementing 3D torus grid topology")
-                  _temp = Proj2.Topologies.creating_3Dtorus_network(actors)
+                  Proj2.Topologies.creating_3Dtorus_network(actors)
             "honeycomb" ->
                   IO.puts("Implementing honeycomb topology")
-                  _temp = Proj2.Topologies.creating_honeycomb_network(actors,topology)
+                  Proj2.Topologies.creating_honeycomb_network(actors,topology)
             "randhoneycomb" ->
                   IO.puts("Implementing honeycomb topology with random neighbors")
-                  _temp = Proj2.Topologies.creating_honeycomb_network(actors,topology)
+                  Proj2.Topologies.creating_honeycomb_network(actors,topology)
              _ ->
                   IO.puts "Please use one of the full | line | rand2D | 3Dtorus | honeycomb | randhoneycomb as topology"
                   System.halt(0)
         end
 
-        for  {number, y}  <-  neighbors  do
-        Proj2.Client.set_neighbors(number, y)           #setting the neighbors
+        for  {pid, neighbors_pid}  <-  neighbors  do
+            Proj2.Client.set_neighbors(pid, neighbors_pid)           #setting the neighbors
         end
 
         start_time = System.monotonic_time(:millisecond)    # start time of convergence

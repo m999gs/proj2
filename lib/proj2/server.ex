@@ -1,16 +1,15 @@
 defmodule Proj2.Server do
   use GenServer
 
-  def init(x) do
-      if is_list(x) do  #runs on push-sum as per List trigger
-          {:ok, %{"s" => List.first(x), "rumour" => List.last(x), "w" => 1, "s_old_2" => 1, "w_old_2" => 1, "diff1" => 1, "diff2" => 1, "neighbors" => []}}
+  def init(arg) do
+      if is_list(arg) do  #runs on push-sum as per List trigger
+          {:ok, %{"s" => List.first(arg), "rumor" => List.last(arg), "w" => 1, "s_old_2" => 1, "w_old_2" => 1, "diff1" => 1, "diff2" => 1, "neighbors" => []}}
       else              #runs on gossip
-          {:ok, %{"rumour" => x, "count" => 0, "neighbors" => []}}
+          {:ok, %{"rumor" => arg, "count" => 0, "neighbors" => []}}
       end
   end
 
-  
-  def handle_cast({:receive_gossip_message, rumour, sender}, state) do
+  def handle_cast({:receive_gossip_message, rumor, sender}, state) do
       {:ok, count} = Map.fetch(state, "count")
       state = Map.put(state, "count", count + 1)
 
@@ -18,24 +17,24 @@ defmodule Proj2.Server do
          _ = GenServer.cast(sender, {:remove_neighbor, self()})
          {:noreply, state}
       else
-          {:ok, existing_rumour} = Map.fetch(state, "rumour")
+          {:ok, existing_rumor} = Map.fetch(state, "rumor")
 
-          if(existing_rumour != "") do
+          if(existing_rumor != "") do
               {:noreply, state}
           else
               [{_, spread}] = :ets.lookup(:count, "spread")
               :ets.insert(:count, {"spread", spread + 1})
-              {:noreply, Map.put(state, "rumour", rumour)}
+              {:noreply, Map.put(state, "rumor", rumor)}
           end
       end
   end
   
-  def handle_cast({:receive_push_sum_message, sender, s, w, rumour}, state) do
+  def handle_cast({:receive_push_sum_message, sender, s, w, rumor}, state) do
       {:ok, s_old} = Map.fetch(state, "s")
       {:ok, w_old} = Map.fetch(state, "w")
       {:ok, s_old_2} = Map.fetch(state, "s_old_2")
       {:ok, w_old_2} = Map.fetch(state, "w_old_2")
-      {:ok, existing_rumour} = Map.fetch(state, "rumour")
+      {:ok, existing_rumor} = Map.fetch(state, "rumor")
 
       s_new = s_old + s
       w_new = w_old + w
@@ -43,8 +42,8 @@ defmodule Proj2.Server do
       if(abs(s_new/w_new - s_old/w_old) < :math.pow(10, -10) && abs(s_old/w_old - s_old_2/w_old_2) < :math.pow(10, -10)) do
         GenServer.cast(sender, {:remove_neighbor, self()})
       else
-            if(existing_rumour == "") do
-                Map.put(state, "rumour", rumour)
+            if(existing_rumor == "") do
+                Map.put(state, "rumor", rumor)
                 [{_, spread}] = :ets.lookup(:count, "spread")
                 :ets.insert(:count, {"spread", spread + 1})
             end
@@ -52,18 +51,18 @@ defmodule Proj2.Server do
             Map.put(state, "w", w_new)
             Map.put(state, "s_old_2", s_old)
             Map.put(state, "w_old_2", w_old)
-            Map.put(state, "diff1", s_new / w_new - s_old / w_old)
-            Map.put(state, "diff2", s_old / w_old - s_old_2 / w_old_2)
+            _ = Map.put(state, "diff1", s_new / w_new - s_old / w_old)
+            _ = Map.put(state, "diff2", s_old / w_old - s_old_2 / w_old_2)
             {:noreply, state}
       end
   end
 
   def handle_cast({:send_gossip_message}, state) do
-        {:ok, rumour} = Map.fetch(state, "rumour")
+        {:ok, rumor} = Map.fetch(state, "rumor")
         {:ok, neighbors} = Map.fetch(state, "neighbors")
         
-        if (rumour != "" && length(neighbors) > 0) do
-            _ = GenServer.cast(Enum.random(neighbors), {:receive_gossip_message, rumour, self()})
+        if (rumor != "" && length(neighbors) > 0) do
+            _ = GenServer.cast(Enum.random(neighbors), {:receive_gossip_message, rumor, self()})
         end
         {:noreply, state}
   end
@@ -71,14 +70,14 @@ defmodule Proj2.Server do
   def handle_cast({:send_pushsum_message}, state) do
       {:ok, s} = Map.fetch(state, "s")
       {:ok, w} = Map.fetch(state, "w")
-      {:ok, rumour} = Map.fetch(state, "rumour")
+      {:ok, rumor} = Map.fetch(state, "rumor")
       {:ok, neighbors} = Map.fetch(state, "neighbors")
-      if (rumour != "" && length(neighbors) > 0) do
+      if (rumor != "" && length(neighbors) > 0) do
         s = s/2
         w = w/2
         state = Map.put(state, "s", s)
         Map.put(state, "w", w)
-        GenServer.cast(Enum.random(neighbors), {:receive_push_sum_message, self(), s, w, rumour})
+        GenServer.cast(Enum.random(neighbors), {:receive_push_sum_message, self(), s, w, rumor})
       end
       {:noreply, state}
   end
@@ -96,8 +95,8 @@ defmodule Proj2.Server do
       {:reply, Map.fetch(state, count), state}
   end
 
-  def handle_call({:get_rumour, rumour}, _from, state) do
-      {:reply, Map.fetch(state, rumour), state}
+  def handle_call({:get_rumor, rumor}, _from, state) do
+      {:reply, Map.fetch(state, rumor), state}
   end
 
   def handle_call({:get_neighbors}, _from, state) do

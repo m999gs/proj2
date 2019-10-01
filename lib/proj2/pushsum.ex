@@ -7,7 +7,7 @@ defmodule Proj2.PushSum do
             if x == middle_actor do
                 x = Integer.to_string(x)
                 {x, _} = Float.parse(x)
-                Proj2.Client.start_link([x] ++ ["rumour"])
+                Proj2.Client.start_link([x] ++ ["rumor"])
             else
                 x = Integer.to_string(x)
                 {x, _} = Float.parse(x)
@@ -18,7 +18,7 @@ defmodule Proj2.PushSum do
     
     def push_sum_algorithm(actors, neighbors, totalNodes) do
         for  {number, _}  <-  neighbors  do
-        Proj2.Client.send_message_push_sum(number)
+        Proj2.Client.message_send_push_sum(number)
         end
 
         actors = is_pushsum_node_alive(actors)

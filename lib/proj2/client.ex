@@ -1,15 +1,19 @@
 defmodule Proj2.Client do
     use GenServer
 
-    def start_link(x) do
-        GenServer.start_link(Proj2.Server, x)
+    def init(init_arg) do
+        {:ok, init_arg}
     end
 
-    def send_message(server) do
+    def start_link(arg) do
+        GenServer.start_link(Proj2.Server, arg)
+    end
+
+    def message_send(server) do
         GenServer.cast(server, {:send_gossip_message})
     end
 
-    def send_message_push_sum(server) do
+    def message_send_push_sum(server) do
         GenServer.cast(server, {:send_pushsum_message})
     end
 
@@ -17,14 +21,8 @@ defmodule Proj2.Client do
         GenServer.cast(server, {:set_neighbors, neighbors})
     end
 
-    def get_count(server) do
-        {:ok, count} = GenServer.call(server, {:get_count, "count"})
-        count
-    end
-
-    def get_rumour(server) do
-        {:ok, rumour} = GenServer.call(server, {:get_rumour, "rumour"})
-        rumour
+    def get_neighbors(server) do
+        GenServer.call(server, {:get_neighbors})
     end
 
     def has_neighbors(server) do
@@ -32,8 +30,14 @@ defmodule Proj2.Client do
         length(neighbors) > 0
     end
 
-    def get_neighbors(server) do
-        GenServer.call(server, {:get_neighbors})
+    def get_count(server) do
+        {:ok, count} = GenServer.call(server, {:get_count, "count"})
+        count
+    end
+
+    def get_rumor(server) do
+        {:ok, rumor} = GenServer.call(server, {:get_rumor, "rumor"})
+        rumor
     end
 
     def get_diff(server) do
