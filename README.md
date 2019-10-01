@@ -73,7 +73,7 @@ Step 4(For Windows user): **$** escript proj2 100 3Dtorus gossip <br />
     
     2. line  - 10,000
     
-    3. rand2D - 1,50,000
+    3. rand2D - 10,000
     
     4. 3Dtorus  - 1,00,000
     
@@ -87,7 +87,7 @@ Step 4(For Windows user): **$** escript proj2 100 3Dtorus gossip <br />
     
     2. line  - 5,000
     
-    3. rand2D - 
+    3. rand2D - 2,500
     
     4. 3Dtorus  - 
     
