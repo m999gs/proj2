@@ -76,7 +76,7 @@ Gossip type algorithms can be used both for group communication and for aggregat
     
     2. line  - 4,000
     
-    3. rand2D - 2,500
+    3. rand2D - 2,000
     
     4. 3Dtorus  - 5,000
     
