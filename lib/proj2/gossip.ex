@@ -12,15 +12,15 @@ defmodule Proj2.Gossip do
     end
     
     def gossip_algorithm(actors, neighbors, totalNodes) do
-        for  {number, _}  <-  neighbors  do
-        Proj2.Client.message_send(number)
+        for  {node, _}  <-  neighbors  do
+        Proj2.Client.message_send(node)
         end
 
         actors = is_gossip_node_alive(actors)
         [{_, spread}] = :ets.lookup(:count, "spread")
         
         if ((spread != totalNodes) && (length(actors) > 1)) do
-            neighbors = Enum.filter(neighbors, fn {number,_} -> Enum.member?(actors, number) end)
+            neighbors = Enum.filter(neighbors, fn {node,_} -> Enum.member?(actors, node) end)
             gossip_algorithm(actors, neighbors, totalNodes)
         end
     end

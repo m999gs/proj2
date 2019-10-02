@@ -17,15 +17,15 @@ defmodule Proj2.PushSum do
     end
     
     def push_sum_algorithm(actors, neighbors, totalNodes) do
-        for  {number, _}  <-  neighbors  do
-        Proj2.Client.message_send_push_sum(number)
+        for  {node, _}  <-  neighbors  do
+        Proj2.Client.message_send_push_sum(node)
         end
 
         actors = is_pushsum_node_alive(actors)
         [{_, spread}] = :ets.lookup(:count, "spread")
         
         if ((spread != totalNodes) && (length(actors) > 1)) do
-        neighbors = Enum.filter(neighbors, fn ({number,_}) -> Enum.member?(actors, number) end)
+        neighbors = Enum.filter(neighbors, fn ({node,_}) -> Enum.member?(actors, node) end)
         push_sum_algorithm(actors, neighbors, totalNodes)
         end
     end
