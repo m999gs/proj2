@@ -4,12 +4,12 @@
  Mohit Garg (UFID: 9013-4089)<br />
  Maharshi Rawal (UFID: 9990-8457)
 
-## **PROBLEM STATEMENT**
+## **Problem Statement**
 
 Gossip type algorithms can be used both for group communication and for aggregate computation. The goal of this project is to determine the convergence of such algorithms through a simulator based on actors written in Elixir. Since actors in Elixir are fully asynchronous, the particular type of Gossip implemented is the so-called Asynchronous Gossip.
 
 
-## **INSTALLATION AND RUN** 
+## **Installation and Run** 
 
 ***Make sure to install Elixir on your PC.***<br />
 1. Unzip the zip archive and navigate to the extracted folder. <br/>
@@ -52,7 +52,7 @@ Gossip type algorithms can be used both for group communication and for aggregat
     
     6. randhoneycomb 
 
-## **LARGEST NETWORK**
+## **Largest Network**
     
    Largest network tested:
    

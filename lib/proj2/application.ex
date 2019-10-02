@@ -6,7 +6,7 @@ defmodule Proj2.Application do
   use Application
 
   def start(_type, _args) do
-    #This thing won't run anymore, no need to worry about code here
+    # This thing won't run anymore, no need to worry about code here
 
     # children = [
     #   # Starts a worker by calling: Proj2.Worker.start_link(arg)
