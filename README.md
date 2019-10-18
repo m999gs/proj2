@@ -18,7 +18,7 @@ Gossip type algorithms can be used both for group communication and for aggregat
 4. Format of Arguments 
 
    (For Mac/Linux Users):    **$** ./proj2  argument1  argument2  argument3 <br />
-   (For Windows Users): **>**escript proj2  argument1  argument2  argument3 <br />
+   (For Windows Users): **$** escript proj2  argument1  argument2  argument3 <br />
    
    **Where:**<br />
      Argument 1 is the number of actors (or nodes) in the network **(Any number greater than 1)**<br />
