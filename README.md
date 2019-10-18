@@ -1,7 +1,7 @@
 # Proj2 -> Gossip and Push-sum algorithm
 
 ## Team Members:
- Mohit Garg (UFID: 9013-4089)<br />
+ Mohit Garg (UFID: ****-****)<br />
  Maharshi Rawal (UFID: 9990-8457)
 
 ## **Problem Statement**
