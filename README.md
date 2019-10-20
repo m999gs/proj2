@@ -2,7 +2,7 @@
 
 ## Team Members:
  Mohit Garg (UFID: ****-****)<br />
- Maharshi Rawal (UFID: 9990-8457)
+ Maharshi Rawal (UFID: ****-****)
 
 ## **Problem Statement**
 
