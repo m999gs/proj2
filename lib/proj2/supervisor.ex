@@ -21,7 +21,7 @@ defmodule Proj2.Supervisor do
                     
                 _ ->
                     IO.puts "you have entered the wrong algorithm name"
-                    IO.puts "please use gossip or push-sum as an algorithm name in 3rd argument"
+                    IO.puts "please use gossip | push-sum as an algorithm name in 3rd argument"
             end
 
         end
@@ -98,7 +98,7 @@ defmodule Proj2.Supervisor do
             Proj2.Client.set_neighbors(number, y)
           end
 
-        start_time = System.monotonic_time(:millisecond)
+        start_time = System.monotonic_time(:millisecond) # start convergence time after creating neighbors
 
         case algorithm do
         "gossip" ->
@@ -106,7 +106,7 @@ defmodule Proj2.Supervisor do
         "push-sum" ->
             push_sum_algorithm(actors, neighbors, totalNodes)
         end
-
+        # time to take the algorithm in convergence only
         IO.puts "Convergence Time: " <> to_string(System.monotonic_time(:millisecond) - start_time) <> " milliseconds"
         System.halt(0)
     end

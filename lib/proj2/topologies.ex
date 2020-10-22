@@ -179,7 +179,6 @@ def creating_3Dtorus_network(actors) do
       end
       # IO.inspect neighbors
 
-      IO.inspect neighbors
 
       neighbor_pids = Enum.map(neighbors, fn x -> {:ok, n} = 
       Map.fetch(indexed_actors, x)
